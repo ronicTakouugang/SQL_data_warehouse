@@ -9,206 +9,216 @@ GO
 CREATE OR ALTER PROCEDURE bronze.load_bronze
 AS
 BEGIN
+    SET NOCOUNT ON;
 
-    TRUNCATE TABLE bronze.crm_cust_info;
+    DECLARE @StartTime DATETIME2;
+    DECLARE @EndTime DATETIME2;
+    DECLARE @DurationSeconds INT;
+    DECLARE @StartLoadTime DATETIME2 = SYSDATETIME();
+    DECLARE @RowsLoaded BIGINT;
 
-    BULK INSERT bronze.crm_cust_info
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\cust_info.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+    BEGIN TRY
 
+        PRINT '============================================================';
+        PRINT 'Loading the Bronze Layer';
+        PRINT '============================================================';
 
-    TRUNCATE TABLE bronze.crm_prd_info;
 
-    BULK INSERT bronze.crm_prd_info
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\prd_info.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        -- CRM Customer Information
 
+        SET @StartTime = SYSDATETIME();
 
-    TRUNCATE TABLE bronze.crm_sales_details;
+        PRINT '';
+        PRINT 'Truncating CRM Customer Information...';
 
-    BULK INSERT bronze.crm_sales_details
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\sales_details.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        TRUNCATE TABLE bronze.crm_cust_info;
 
+        PRINT 'Loading CRM Customer Information...';
 
-    TRUNCATE TABLE bronze.erp_cust_az12;
+        BULK INSERT bronze.crm_cust_info
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\cust_info.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
-    BULK INSERT bronze.erp_cust_az12
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\CUST_AZ12.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
+        PRINT 'CRM Customer Information loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    TRUNCATE TABLE bronze.erp_loc_a101;
 
-    BULK INSERT bronze.erp_loc_a101
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\LOC_A101.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        -- CRM Product Information
 
+        SET @StartTime = SYSDATETIME();
 
-    TRUNCATE TABLE bronze.erp_px_cat_g1v2;
+        PRINT '';
+        PRINT 'Truncating CRM Product Information...';
 
-    BULK INSERT bronze.erp_px_cat_g1v2
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\PX_CAT_G1V2.csv'
-    WITH (-- ============================================================
--- Data Warehouse: Bronze Layer
--- Load Bronze Procedure
--- ============================================================
+        TRUNCATE TABLE bronze.crm_prd_info;
 
-USE DataWarehouse;
-GO
+        PRINT 'Loading CRM Product Information...';
 
-CREATE OR ALTER PROCEDURE bronze.load_bronze
-AS
-BEGIN
-    PRINT '--------------';
-    PRINT 'Loading the Bronze Layer';
-    PRINT '--------------';
+        BULK INSERT bronze.crm_prd_info
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\prd_info.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
-    -- CRM Customer Information
+        PRINT 'CRM Product Information loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    PRINT 'Truncating CRM Customer Information...';
 
-    TRUNCATE TABLE bronze.crm_cust_info;
+        -- CRM Sales Details
 
-    PRINT 'Loading CRM Customer Information...';
+        SET @StartTime = SYSDATETIME();
 
-    BULK INSERT bronze.crm_cust_info
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\cust_info.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        PRINT '';
+        PRINT 'Truncating CRM Sales Details...';
 
-    PRINT 'CRM Customer Information loaded successfully.';
+        TRUNCATE TABLE bronze.crm_sales_details;
 
+        PRINT 'Loading CRM Sales Details...';
 
-    -- CRM Product Information
+        BULK INSERT bronze.crm_sales_details
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\sales_details.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
-    PRINT 'Truncating CRM Product Information...';
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
-    TRUNCATE TABLE bronze.crm_prd_info;
+        PRINT 'CRM Sales Details loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    PRINT 'Loading CRM Product Information...';
 
-    BULK INSERT bronze.crm_prd_info
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\prd_info.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        -- ERP Customer Information
 
-    PRINT 'CRM Product Information loaded successfully.';
+        SET @StartTime = SYSDATETIME();
 
+        PRINT '';
+        PRINT 'Truncating ERP Customer Information...';
 
-    -- CRM Sales Details
+        TRUNCATE TABLE bronze.erp_cust_az12;
 
-    PRINT 'Truncating CRM Sales Details...';
+        PRINT 'Loading ERP Customer Information...';
 
-    TRUNCATE TABLE bronze.crm_sales_details;
+        BULK INSERT bronze.erp_cust_az12
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\CUST_AZ12.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
-    PRINT 'Loading CRM Sales Details...';
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
-    BULK INSERT bronze.crm_sales_details
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_crm\sales_details.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        PRINT 'ERP Customer Information loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    PRINT 'CRM Sales Details loaded successfully.';
 
+        -- ERP Location Information
 
-    -- ERP Customer Information
+        SET @StartTime = SYSDATETIME();
 
-    PRINT 'Truncating ERP Customer Information...';
+        PRINT '';
+        PRINT 'Truncating ERP Location Information...';
 
-    TRUNCATE TABLE bronze.erp_cust_az12;
+        TRUNCATE TABLE bronze.erp_loc_a101;
 
-    PRINT 'Loading ERP Customer Information...';
+        PRINT 'Loading ERP Location Information...';
 
-    BULK INSERT bronze.erp_cust_az12
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\CUST_AZ12.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        BULK INSERT bronze.erp_loc_a101
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\LOC_A101.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
-    PRINT 'ERP Customer Information loaded successfully.';
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
+        PRINT 'ERP Location Information loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    -- ERP Location Information
 
-    PRINT 'Truncating ERP Location Information...';
+        -- ERP Product Category
 
-    TRUNCATE TABLE bronze.erp_loc_a101;
+        SET @StartTime = SYSDATETIME();
 
-    PRINT 'Loading ERP Location Information...';
+        PRINT '';
+        PRINT 'Truncating ERP Product Category...';
 
-    BULK INSERT bronze.erp_loc_a101
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\LOC_A101.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        TRUNCATE TABLE bronze.erp_px_cat_g1v2;
 
-    PRINT 'ERP Location Information loaded successfully.';
+        PRINT 'Loading ERP Product Category...';
 
+        BULK INSERT bronze.erp_px_cat_g1v2
+        FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\PX_CAT_G1V2.csv'
+        WITH (
+            FIRSTROW = 2,
+            FIELDTERMINATOR = ',',
+            TABLOCK
+        );
 
-    -- ERP Product Category
+        SET @RowsLoaded = @@ROWCOUNT;
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartTime, @EndTime);
 
-    PRINT 'Truncating ERP Product Category...';
+        PRINT 'ERP Product Category loaded successfully.';
+        PRINT 'Rows loaded: ' + CAST(@RowsLoaded AS VARCHAR(20));
+        PRINT 'Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
 
-    TRUNCATE TABLE bronze.erp_px_cat_g1v2;
 
-    PRINT 'Loading ERP Product Category...';
+        -- Load Summary
 
-    BULK INSERT bronze.erp_px_cat_g1v2
-    FROM 'C:\Users\ronic\Desktop\SQL_data_warehouse\datasets\source_erp\PX_CAT_G1V2.csv'
-    WITH (
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+        SET @EndTime = SYSDATETIME();
+        SET @DurationSeconds = DATEDIFF(SECOND, @StartLoadTime, @EndTime);
 
-    PRINT 'ERP Product Category loaded successfully.';
+        PRINT '';
+        PRINT '============================================================';
+        PRINT 'Bronze Layer loaded successfully.';
+        PRINT 'Total Duration: ' + CAST(@DurationSeconds AS VARCHAR(20)) + ' seconds';
+        PRINT '============================================================';
 
 
-    PRINT '--------------';
-    PRINT 'Bronze Layer loaded successfully.';
-    PRINT '--------------';
+    END TRY
 
-END;
-GO
-        FIRSTROW = 2,
-        FIELDTERMINATOR = ',',
-        TABLOCK
-    );
+    BEGIN CATCH
+
+        PRINT '';
+        PRINT '============================================================';
+        PRINT 'ERROR: Bronze Layer loading failed.';
+        PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS VARCHAR(20));
+        PRINT 'Error Message: ' + ERROR_MESSAGE();
+        PRINT 'Error Line: ' + CAST(ERROR_LINE() AS VARCHAR(20));
+        PRINT '============================================================';
+
+        THROW;
+
+    END CATCH
 
 END;
 GO
