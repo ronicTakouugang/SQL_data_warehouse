@@ -1,8 +1,37 @@
 -- ============================================================
 -- Data Warehouse: Silver Layer
--- Load Silver Procedure
+-- Stored Procedure: silver.load_silver
 -- ============================================================
-
+-- Scripts Purpose:
+--     This stored procedure loads and transforms data from the
+--     Bronze Layer into the Silver Layer.
+--
+--     The procedure applies data cleansing and standardization
+--     rules before inserting the data into the Silver tables.
+--
+-- Actions:
+--     - Truncates existing Silver tables before loading.
+--     - Cleans and standardizes ERP customer information.
+--     - Removes unnecessary prefixes and spaces from customer IDs.
+--     - Validates customer birth dates.
+--     - Standardizes gender values.
+--     - Cleans and standardizes country information.
+--     - Removes duplicate location records.
+--     - Cleans ERP product category information.
+--     - Replaces missing or empty values with 'N/A'.
+--     - Tracks the execution time of each loading step.
+--     - Reports the number of rows loaded for each table.
+--     - Handles errors using TRY...CATCH.
+--     - Reports the total execution time of the Silver Layer.
+--
+-- Parameters:
+--     None.
+--     This procedure does not require any input parameters.
+--
+-- Usage Example:
+--     EXEC silver.load_silver;
+--
+-- ============================================================
 USE DataWarehouse;
 GO
 
